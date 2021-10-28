@@ -1,0 +1,23 @@
+version: "3"
+services:
+  app:
+    build:
+      context: ./
+      dockerfile: Dockerfile-debug 
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+    volumes:
+      - ./:/app  
+  mongo:
+    image: mongo
+    volumes:
+      - mongo-data:/data/db
+    restart: always
+    ports:
+      - "0.0.0.0:27020-27022:27017-27019"
+volumes:
+  mongo-data:
+    driver: local

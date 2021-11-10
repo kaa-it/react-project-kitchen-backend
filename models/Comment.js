@@ -3,7 +3,12 @@ var mongoose = require('mongoose');
 var CommentSchema = new mongoose.Schema({
   body: String,
   author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  article: { type: mongoose.Schema.Types.ObjectId, ref: 'Article' }
+  article: { type: mongoose.Schema.Types.ObjectId, ref: 'Article' },
+  likes: {
+    type: Array,
+    default: [],
+  },
+  likesCount: {type: Number, default: 0},
 }, {timestamps: true});
 
 // Requires population of author
@@ -12,8 +17,25 @@ CommentSchema.methods.toJSONFor = function(user){
     id: this._id,
     body: this.body,
     createdAt: this.createdAt,
-    author: this.author.toProfileJSONFor(user)
+    author: this.author.toProfileJSONFor(user),
+    likesCount: this.likesCount,
   };
+};
+
+CommentSchema.methods.like = function(id){
+  if(this.likes.indexOf(id) === -1){
+    this.likes.push(id);
+    this.likesCount += 1;
+  }
+
+  return this.save();
+};
+
+CommentSchema.methods.dislike = function(id){
+  this.likes.pull(id);
+  if (this.likes > 0) this.likesCount -= 1;
+
+  return this.save();
 };
 
 mongoose.model('Comment', CommentSchema);

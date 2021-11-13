@@ -19,6 +19,7 @@ CommentSchema.methods.toJSONFor = function(user){
     createdAt: this.createdAt,
     author: this.author.toProfileJSONFor(user),
     likesCount: this.likesCount,
+    isLiked: this.likes.includes(user._id.toString()),
   };
 };
 
@@ -33,7 +34,7 @@ CommentSchema.methods.like = function(id){
 
 CommentSchema.methods.dislike = function(id){
   this.likes.pull(id);
-  if (this.likes > 0) this.likesCount -= 1;
+  if (this.likesCount > 0) this.likesCount -= 1;
 
   return this.save();
 };

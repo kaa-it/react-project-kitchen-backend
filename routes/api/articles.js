@@ -1,4 +1,5 @@
 var router = require('express').Router();
+const { request } = require('express');
 var mongoose = require('mongoose');
 var Article = mongoose.model('Article');
 var Comment = mongoose.model('Comment');
@@ -275,5 +276,32 @@ router.delete('/:article/comments/:comment', auth.required, function(req, res, n
     res.sendStatus(403);
   }
 });
+
+// Like a comment
+router.put('/article/comments/:comment/like', auth.required, (req, res, next) => {
+  User.findById(req.payload.id).then(function(user){
+    if(!user){ return res.sendStatus(401); }
+
+    return Comment.findById(req.comment._id).populate('author').then(function(comment){
+      return comment.like(req.payload.id).then(function(){
+        return res.json({comment: comment.toJSONFor(user)});
+      })
+    });
+  }).catch(next);
+});
+
+// Dislike a comment
+router.delete('/article/comments/:comment/dislike', auth.required, (req, res, next) => {
+  User.findById(req.payload.id).then(function(user){
+    if(!user){ return res.sendStatus(401); }
+
+    return Comment.findById(req.comment._id).populate('author').then(function(comment){
+      return comment.dislike(req.payload.id).then(function(){
+        return res.json({comment: comment.toJSONFor(user)});
+      })
+    });
+  }).catch(next);
+});
+
 
 module.exports = router;

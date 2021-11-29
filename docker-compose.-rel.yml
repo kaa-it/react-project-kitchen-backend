@@ -1,4 +1,8 @@
 version: "3"
+
+volumes:
+  data-volume:
+
 services:
   app:
     image: app
@@ -11,8 +15,5 @@ services:
   mongo:
     image: mongo
     volumes:
-      - mongo-data:/data/db
+      - data-volume:/data/db
     restart: always
-volumes:
-  mongo-data:
-    driver: local

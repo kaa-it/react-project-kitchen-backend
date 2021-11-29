@@ -1,6 +1,6 @@
 .PHONY: dist push
 
-VERSION := 1.0.0
+VERSION := 1.0.1
 
 build:
 	docker-compose build
